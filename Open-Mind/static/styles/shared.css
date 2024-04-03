@@ -1,0 +1,14 @@
+
+body {
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(17,47,150,1) 0%, rgba(7,56,152,1) 0%, rgba(61,72,203,1) 0%, rgba(125,45,118,1) 100%, rgba(41,45,118,1) 100%);
+}
+
+
+button {
+    opacity: 0.9;
+}
+
+button:hover {
+    opacity: 1.0;
+}

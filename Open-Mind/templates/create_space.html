@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../static/styles/create_space.css">
+    <link rel="stylesheet" href="../static/styles/shared.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h3>Create Space</h3>
+        <input id="space_name" placeholder="Space Name..." type="text"/>
+        <input class="space-description" id="space_description" placeholder="Optional Description..." type="text"/>
+        <button data-group="group_1" id="create_space">Create</button>
+        <h3>Add Room(s)</h3>
+        <input id="room_name" data-group="group_1" disabled type="text" placeholder="Room Name..."/>
+        <button data-group="group_1" disabled id="create_room">Add Room</button>
+
+        <div id="added_rooms">
+        
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        
+        let space = {}
+
+        // create space button
+        $("#create_space").on("click", function() {
+            let space_name = $("#space_name").val();
+            let space_description;
+
+            if (space_name == "") {
+                alert("Input space name!")
+            }
+            if ($("#space_description").val()) {
+                space_description = $("#space_description").val();
+            }
+            else {
+                space_description = "No Description";
+            }
+
+            if (space_name) {
+                console.log(space_name);
+            fetch(`/check_space/${space_name}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data) {
+                        $("[data-group='group_1']").prop("disabled", function(i, value) {
+                            return !value;
+                        });
+
+                        space["space_name"] = space_name;
+                        space["space_description"] = space_description;
+                        
+                        $("#added_rooms").append(`
+                            
+                                <div class="appended-rooms"> 
+                                    <h3>Preview</h3>
+                                    <p><b>Space Name</b>: ${space_name}</p>
+                                    <p><b>Description</b>: ${space_description}</p>
+                                    <h3>Rooms</h3> 
+                                </div>
+                                <button class="save-button" onclick="save()">Save</button>
+                            `);
+                    }
+                    else {
+                        alert("Space already exists. Use another name!");
+                    }
+                });
+            }
+            
+        });
+
+        // add_room button
+        let rooms = [];
+        $("#create_room").on("click", function() {
+            let room_name = $("#room_name").val();
+            if (room_name == "") {
+                return;
+            }
+            if (rooms.includes(room_name)) {
+                alert("Room already added. Use another name!")
+            }
+            else {
+                rooms.push(room_name);
+                $(".appended-rooms").append(`<p data-room_name="${room_name}" id="${room_name}">
+                <b>Room Name</b>: ${room_name} 
+                <button class="remove-button" onclick="remove_room('${room_name}')" data-room_name="${room_name}" id="remove_room"> Remove </button>
+                 </p>`);
+                console.log(rooms);
+            }
+            
+        })
+
+        // function for remove room button
+        function remove_room(name) {
+            console.log("button working");
+            let deleted_room = $(`[data-room_name="${name}"]`);
+            console.log(deleted_room.data("room_name"));
+
+            $.each(rooms, function(index, value) {
+                if (value == name) {
+                    rooms.splice(index, 1);
+                    deleted_room.html("");
+                }
+                console.log(rooms);
+            });
+        }
+
+        //function for saving room
+        function save() {
+            if (rooms.length == 0) {
+                alert("Add a room!")
+                return;
+            }
+            let space_data = {
+                space_name: space["space_name"],
+                space_description: space["space_description"],
+                rooms: rooms
+            };
+            
+            console.log("this is the saved data", space_data);
+            fetch("/create_space", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(space_data)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        }
+                    }
+                })
+        }       
+    </script>
+</body>
+</html>

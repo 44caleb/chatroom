@@ -1,0 +1,73 @@
+body {
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(7,56,152,1) 0%, rgba(169,175,255,1) 0%, rgba(226,146,205,1) 100%, rgba(39,2,177,1) 100%);
+}
+
+.container {
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+    height: 60%;
+    border: 1px solid grey;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    text-decoration: underline;
+    color: white;
+}
+.username {
+    display: block;
+    margin-bottom: 30px;
+    width: 60%;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    padding-left: 20px;
+
+}
+
+.password {
+    display: block;
+    width: 60%;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.submit {
+    border: none;
+    color: white;
+    border-radius: 10px;
+    height: 30px;
+    width: 20%;
+    background-color: rgb(23, 78, 189);
+    opacity: 0.9;
+}
+
+.submit:hover {
+    opacity: 1.0;
+}
+
+.error{
+    margin-bottom: 10px;
+    color: red;
+    font-size: 15px;
+}
+
+.prompt {
+    font-size: 15px;
+}

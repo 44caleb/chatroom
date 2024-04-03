@@ -1,0 +1,79 @@
+body {
+    text-align: center;
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(7,56,152,1) 0%, rgba(169,175,255,1) 0%, rgba(226,146,205,1) 100%, rgba(39,2,177,1) 100%);
+    font-family: 'Open Sans', sans-serif;
+}
+
+
+div.container {
+    margin-top: 90px;
+}
+
+h4 {
+    color: white;
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+div.space-list {
+    padding-top: 20px;
+    background-color: rgb(5, 24, 94);
+    margin: auto;
+    height: 75vh;
+    width: 600px;
+    border-radius: 10px;
+    border: 1px solid grey;
+    overflow: auto;
+}
+
+input.space-search {
+    margin-left: 5px;
+    height: 10px;
+    width: 50%;
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+    margin-bottom: 30px;
+    
+}
+div.space-container {
+    display: inline-block;
+    padding-left: 10px;
+    color: white;
+    width: 75%;
+    text-align: left;
+    background-color: rgb(111, 76, 207);
+    border-radius: 10px;
+    margin-left: 5px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+p.space-name {
+    text-decoration: underline;
+    font-size: 20px;
+}
+
+p.description {
+    font-size: 14px;
+}
+
+div.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    text-align: center;
+    float: right;
+    width: 20%;
+    height: 15%;
+}
+
+.join-button {
+    color: white;
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(111, 76, 207);
+    width: 90%;
+    height: 40px;
+}

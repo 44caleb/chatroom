@@ -1,0 +1,49 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(7,56,152,1) 0%, rgba(169,175,255,1) 0%, rgba(226,146,205,1) 100%, rgba(39,2,177,1) 100%);
+}
+
+div.container {
+    width: 50%;
+    margin: auto;
+}
+
+div.appended-rooms {
+    
+    padding-left: 10px;
+    margin-top: 10px;
+    position: relative;
+    height: 500px;
+    width: 500px;
+    border: 1px solid black;
+    border-radius: 5px;
+    overflow: auto;
+}
+
+button {
+    background-color: rgb(25, 80, 191);
+    border: none;
+    color: white;
+    border-radius: 10px;
+    height: 40px;
+    width: 70px;
+    padding-left: 1px;
+    text-align: center;
+}
+
+input {
+    height: 40px;
+    border-radius: 5px;
+    border: none;
+}
+
+button.save-button {
+    margin-top: 10px;
+    width: 80px;
+}
+
+button.remove-button {
+    margin-left: 10px;
+    height: 30px;
+
+}

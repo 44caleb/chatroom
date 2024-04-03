@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/styles/login.css"/>
+    <link rel="stylesheet" href="../static/styles/shared.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <form action="/login" method="POST">
+            <h3 class="header">Login</h3>
+            <input class="username" type="text" placeholder="Username" name="username">
+            <input class="password" type="password" placeholder="Password" name="password">
+            <div class="error"></div>
+            <input class="submit" type="submit" placeholder="Login">
+            <p class="register">Don't have an account? <a style="color: white;" href="/register">Sign up</a></p>
+        </form>
+    </div>
+    
+    
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $("form").submit(function (event) {
+            event.preventDefault();
+            let formData = $(this).serialize();
+
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type" : "application/x-www-form-urlencoded"
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        }
+                        else {
+                            return response.json();
+                        }
+                    }
+                })
+                .then(data => {
+                    $(".error").html("");
+                    $(".error").append(data);
+                })
+        })
+    </script>
+</body>
+</html>

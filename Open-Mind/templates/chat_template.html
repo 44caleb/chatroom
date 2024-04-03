@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/styles/chatspace.css">
+    <link rel="stylesheet" href="../static/styles/shared.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="topnav">
+        <a class="logout" href="/logout">Logout</a>
+        <a class="create-space" href="/create_space"> Create Space</a>
+        <a class="join-space" href="/join_space">Join a Space</a>
+    </div>
+    <div class="container">
+        <div class="spaces">
+            <h1 class="space-header">Spaces</h1> 
+                {% for space in user_spaces %}
+                <p class="space-name"> {{space}} <button class="join-namespace" data-space_id="{{space}}">Join</button></p>
+                {% endfor %}
+        </div>
+    
+        <div class="rooms">
+            <h1 class="room-header">Rooms</h1>
+                {% for room in space_rooms %}
+                <p class="room-name"> {{ room }} <button onclick="joinRoom('{{room}}')" class="join-room" data-room_id="{{ room }}">Enter</button></p>
+                {% endfor %}
+        </div>
+        
+        <div class="chat-area">
+            <div class="message-space" id="chatspace">
+            </div>
+            <div class="message-send">
+                <input class="message-input" type="text" placeholder="Type message..." id="message">
+                <button class="send-button" id="send">Send</button>
+            </div>
+            
+        </div>
+    </div>
+    
+    
+
+</body>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz" crossorigin="anonymous"></script>
+<script>
+    
+    let socket;
+    let room;
+    let space_name;
+    let user;
+
+
+
+    console.log("about to connect", user);
+    socket = io();
+    socket.on("connected", function(data) {
+        user = data;
+        console.log("now connected.....", user);
+
+        //fetch user data
+        fetch("/user_data")
+        .then(response => response.json())
+        .then(data => {
+            console.log("latest room......", data["latest_room"])
+            socket.emit("joined_room", {room: data["latest_room"], space: data["latest_space"]})
+            space_name = data["latest_space"]
+            room = data["latest_room"]
+
+            // highlight user's latest space and rooms on refresh
+            $(`[data-space_id="${data['latest_space']}"]`).toggleClass("highlight-space");
+
+            $(`[data-room_id="${data['latest_room']}"]`).toggleClass("highlight-room");
+
+        })
+    })
+
+    
+
+
+
+    // handler for loading room messages
+    socket.on("load_message", function(data) {
+        console.log("ccccccccccc", data);
+        
+        $("#chatspace").html("");
+
+        if (data.length == 0) {
+            console.log("no data");
+            $("#chatspace").html("<p class='default-message'>NO MESSAGES YET. START THE CONVERSATION...<p>");
+        }
+        else {
+            $.each(data, function(index, value) {
+                console.log("value is", value);
+                console.log("sender is", value.sender);
+                console.log("index is", index);
+                if (value.sender == user) {
+                    $("#chatspace").append(`
+                    <div class="message-box">
+                    <p class="message-sender">${value.sender}</p>
+                    <p class="message">${value.message}</p>
+                    <p class="message-time">${value.time}
+                    </div>
+                `);
+                }
+                else {
+                    $("#chatspace").append(`
+                    <div style="float: left; background-color: rgb(125, 136, 176);" class="message-box"
+                    <p class="message-sender">${value.sender}</p>
+                    <p class="message">${value.message}</p>
+                    <p class="message-time">${value.time}
+                    </div>
+                `);
+                }
+            });
+        }   
+    });
+
+    // handler for sending messages
+    socket.on("broadcast_messages", function(data) {
+        
+        // default message shown if a room has no messages
+        let default_message = $(".default-message");
+
+        if (default_message.length != 0) {
+            console.log("found the defaultllll", default_message);
+            $("#chatspace").html("");
+        }
+        
+        if (data.sender == user) {
+            console.log("rrrrrrrrrrrrrrrrrrrrrrrrrr");
+            console.log("xxxxxxxxxxxxxxx", data.message);
+            $("#chatspace").append(`
+                <div class="message-box">
+                <p class="message-sender">${data.sender}</p>
+                <p class="message">${data.message}</p>
+                <p class="message-time">${data.time}
+                </div>
+            `);
+        } else {
+            console.log("yyyyyyyy", data.message);
+            $("#chatspace").append(`
+                <div style="float: left; background-color: rgb(125, 136, 176);" class="message-box"
+                <p class="message-sender">${data.sender}</p>
+                <p class="message">${data.message}</p>
+                <p class="message-time">${data.time}
+                </div>
+            `);
+        }
+        
+    });
+    
+
+    $(".join-namespace").on("click", function() {
+        space_name = $(this).data("space_id");
+        console.log(space_name)
+
+        // highlight space on clicking
+        $(".highlight-space").removeClass("highlight-space");
+        $(this).toggleClass("highlight-space");
+
+
+        // get rooms for the space that was clicked on
+        fetch(`/get_rooms/${space_name}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                $(".rooms").html("<h1 class='room-header'>Rooms</h1>");
+
+                $.each(data, function(index, value) {
+                    // appends the room elements for the particular space
+                    $(".rooms").append(`<p>${value} <button onclick="joinRoom('${value}')" class="join-room" data-room_id="${value}">Enter</button></p>`);
+                });
+
+                socket.emit("joined_space", space_name);
+        });
+            
+    });
+
+    // function for the room join button. 
+    function joinRoom(roomName) {
+        // removes highlights from previous button and highlights the button element clicked
+        $(".highlight-room").removeClass("highlight-room");
+        $(`[data-room_id="${roomName}"]`).toggleClass("highlight-room");
+
+        room = roomName;
+        socket.emit("joined_room", {room: room, space: space_name});
+        console.log("in the room", room);
+    }
+
+    
+
+    $("#send").on("click", function() {
+        let message = $("#message").val();
+        console.log(message);
+        console.log({message: message, room: room, space: space_name, sender: user});
+        console.log(room, "gggggggggggggggggggggggggggggggggggggggggggg");
+        socket.emit("send_message", {message: message, room: room, space: space_name, sender: user});
+    });
+
+
+</script>
+</html>

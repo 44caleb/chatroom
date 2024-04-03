@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../static/styles/join_space.css">
+    <link rel="stylesheet" href="../static/styles/shared.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h4> Join a space...</h4>
+
+        
+        <div class="space-list">
+            <input class="space-search" type="text" placeholder="Search..."/>
+            
+            {% for space in spaces %}
+            <div class="space-container">
+                <p class="space-name">{{ space.space_name }}</p>
+                <p class="description">{{ space.description }}</p>
+            </div>
+            <div class="button-container">
+                <button  class="join-button" onclick="joinSpace('{{space.space_name}}')">Join</button>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    <script>
+        
+        function joinSpace(name) {
+            fetch("/join_space", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(name)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        }
+                    }
+                })
+                
+        }
+
+    </script>
+    
+</body>
+</html>
